@@ -1,5 +1,3 @@
-import time
-
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -7,7 +5,6 @@ from langchain import LLMChain
 from langchain.chat_models import ChatOpenAI
 from litestar import Litestar, MediaType, Request, Response, get, post
 from litestar.contrib.jinja import JinjaTemplateEngine
-from litestar.datastructures import Cookie
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response_containers import Template
@@ -15,10 +12,8 @@ from litestar.static_files.config import StaticFilesConfig
 from litestar.template.config import TemplateConfig
 from typing_extensions import Annotated
 
+from config import OpenAI
 from utils import get_prompt
-
-from config import OpenAI, Paths
-
 
 chain_create = LLMChain(
     llm=ChatOpenAI(
@@ -39,11 +34,8 @@ def index() -> Template:
 
 @dataclass
 class Query:
-    df_info: str
     query: str
-    filename: str
-    previous_code: str
-    previous_query: str
+    df_info: str
 
 
 @post(path="/ask", name="ask")

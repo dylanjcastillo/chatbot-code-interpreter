@@ -3,7 +3,7 @@ Given an user query, create a syntactically correct Python script that will proc
 You must use the following format:
 
 Query: <user query>
-Dataset: <dataframe info>
+Dataset (<dataset_name>): <dataframe info>
 Steps: <steps to solve query>
 Code: ```python <plotly code>```
 
@@ -13,8 +13,32 @@ You must save the answer in a string variable called `result`, and the last line
 
 You can only import standard libraries from Python, and these external libraries: pandas, and numpy. You must always include the required imports.
 
+### EXAMPLE ###
+Query: What's the maximum height of males?
+Dataset ('analysis.csv'):
+                 0           1           2
+Gender        Male      Female        Male
+Height         181         172         178
+Weight          89          68          79
+Steps:
+1. Filter data to include only males
+2. Find maximum height of resulting rows
+3. Return result to user
+Code: ```python
+import pandas as pd
+import numpy as np
+
+df = pd.read_csv("analysis.csv") # replace with the actual file name and path
+
+filtered_df = df[df["Gender"] == "Male"]
+highest_male_height = filtered_df.Height.max()
+result = "Height of the highest male: " + highest_male_height
+result
+
+```
+
 ### RESULT ###
 Query: {query}
-Dataset:
+Dataset ('all_stocks.csv'):
 {df_info}
 Steps:

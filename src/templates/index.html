@@ -7,15 +7,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Code Runner Chatbot</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.23.2/full/pyodide.js"></script>
 </head>
 
 <body>
     <main class="container">
-        <h1>Code Runner Chatbot</h1>
-        <textarea name="query" id="" cols="30" rows="10" placeholder="Ask a question about the dataset"></textarea>
-        <button>Ask</button>
-        <blockquote>This is the answer</blockquote>
+        <h1 style="text-align:center;">Code Runner Chatbot</h1>
+        <textarea name="query" id="query" cols="30" rows="10" placeholder="Ask a question about the dataset"></textarea>
+        <button id="ask-btn">Ask</button>
+        <blockquote id="output">
+        </blockquote>
     </main>
+    <script>
+        const queryTextArea = document.getElementById('query');
+        const outputElement = document.getElementById('output');
+        const askBtn = document.getElementById('ask-btn');
+
+        async function setupPyodide() {
+            let pyodide = await loadPyodide();
+
+            await pyodide.loadPackage(['micropip']);
+            await pyodide.runPythonAsync("import micropip");
+            await pyodide.runPythonAsync('micropip.install(["pandas", "plotly", "numpy", "openpyxl"])');
+
+            const response = await fetch('/static/all_stocks.csv');
+            const fileContentArrayBuffer = await response.arrayBuffer();
+            const fileContent = new Uint8Array(fileContentArrayBuffer);
+            pyodide.FS.writeFile('all_stocks.csv', fileContent);
+
+            return pyodide;
+        }
+
+        let pyodideReadyPromise = setupPyodide();
+
+        askBtn.addEventListener('click', async (event) => {
+            let pyodide = await pyodideReadyPromise;
+
+            const query = queryTextArea.value;
+            const df_info = await pyodide.runPythonAsync(`
+            import pandas as pd
+            df = pd.read_csv('all_stocks.csv')
+            pd.set_option('display.max_columns', None)
+            df.head(3).T
+            `);
+
+            const data = new FormData();
+            data.append('query', query);
+            data.append('df_info', df_info);
+
+            try {
+                const response = await fetch('/ask', {
+                    method: 'POST',
+                    body: data,
+                });
+
+                if (response.ok) {
+                    const result = await response.text();
+                    const output = await pyodide.runPythonAsync(result);
+
+                    outputElement.innerText = output;
+                } else {
+                    console.error('Error:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+    </script>
 </body>
 
 </html>
