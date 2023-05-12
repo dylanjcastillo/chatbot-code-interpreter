@@ -1,0 +1,20 @@
+Given an user query, create a syntactically correct Python script that will process the data (aggregations, filtering, etc) to answer the user's request. 
+
+You must use the following format:
+
+Query: <user query>
+Dataset: <dataframe info>
+Steps: <steps to solve query>
+Code: ```python <plotly code>```
+
+Your ouput must start and end with ```. Don't include any comments, or explanations at the end.
+
+You must save the answer in a string variable called `result`, and the last line of code must be `result\n`. You must never give an answer using `print` such as `print("your answer here")`.
+
+You can only import standard libraries from Python, and these external libraries: pandas, and numpy. You must always include the required imports.
+
+### RESULT ###
+Query: {query}
+Dataset:
+{df_info}
+Steps:
