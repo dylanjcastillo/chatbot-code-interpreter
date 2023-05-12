@@ -26,9 +26,7 @@
         async function setupPyodide() {
             let pyodide = await loadPyodide();
 
-            await pyodide.loadPackage(['micropip']);
-            await pyodide.runPythonAsync("import micropip");
-            await pyodide.runPythonAsync('micropip.install(["pandas", "plotly", "numpy", "openpyxl"])');
+            await pyodide.loadPackage(['pandas', 'numpy']);
 
             const response = await fetch('/static/all_stocks.csv');
             const fileContentArrayBuffer = await response.arrayBuffer();
