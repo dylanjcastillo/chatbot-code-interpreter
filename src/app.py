@@ -3,7 +3,7 @@ from pathlib import Path
 
 from langchain import LLMChain
 from langchain.chat_models import ChatOpenAI
-from litestar import Litestar, MediaType, Request, Response, get, post
+from litestar import Litestar, get, post
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
@@ -20,10 +20,8 @@ chain_create = LLMChain(
         temperature=0,
         model_name=OpenAI.model_name,
         openai_api_key=OpenAI.secret_key,
-        request_timeout=120,
     ),
     prompt=get_prompt(),
-    verbose=True,
 )
 
 
@@ -40,13 +38,11 @@ class Query:
 
 @post(path="/ask", name="ask")
 def ask(
-    request: Request,
     data: Annotated[Query, Body(media_type=RequestEncodingType.MULTI_PART)],
-) -> Response[str]:
+) -> str:
     query = data.query
     df_info = data.df_info
 
-    result = ""
     chain_result = chain_create.run(
         {
             "df_info": df_info,
@@ -55,10 +51,7 @@ def ask(
     )
     result = chain_result.split("```python")[-1][:-3].strip()
 
-    return Response(
-        result,
-        media_type=MediaType.TEXT,
-    )
+    return result
 
 
 app = Litestar(
