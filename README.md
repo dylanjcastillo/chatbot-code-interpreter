@@ -15,6 +15,14 @@ If you're curious, check out the step-by-step [tutorial](https://dylancastillo.c
    ```
 5. Update .env-example with your OpenAI secret key and save it as `.env`
 6. To start the app, open a terminal in `src/app` and run `litestar run --reload --debug`
+7. Go to `http://127.0.0.1`.
+
+## Screenshots
+
+The app looks like this:
+
+<img src="https://github.com/dylanjcastillo/chatbot-code-interpreter/assets/7218756/bcc56ab2-15d6-4151-9899-bcfec9a0c37c" width="500">
 
 ## License
+
 MIT.
