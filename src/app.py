@@ -26,7 +26,7 @@ chain_create = LLMChain(
 
 
 @get(path="/", name="index")
-def index() -> Template:
+async def index() -> Template:
     return Template(name="index.html")
 
 
@@ -36,7 +36,7 @@ class Query:
     df_info: str
 
 
-@post(path="/ask", name="ask")
+@post(path="/ask", name="ask", sync_to_thread=True)
 def ask(
     data: Annotated[Query, Body(media_type=RequestEncodingType.MULTI_PART)],
 ) -> str:
